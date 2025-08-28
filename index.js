@@ -4,9 +4,9 @@ import fetch from "node-fetch";
 // Configuración de tu app en Azure
 const config = {
   auth: {
-    clientId: "b538cc43-fcc5-4639-9055-1bee60c3cc8a", // 👈 Reemplaza con tu Client ID de Azure
+    clientId: "b538cc43-fcc5-4639-9055-1bee60c3cc8a", 
     authority: "https://login.microsoftonline.com/common",
-    redirectUri: "http://localhost:3000", // 👈 Debe coincidir con lo registrado en Azure
+    redirectUri: "http://localhost:3000", 
   }
 };
 
@@ -14,22 +14,22 @@ const pca = new PublicClientApplication(config);
 
 async function main() {
   try {
-    // 1️⃣ Pedir URL de login
+    //  Pedir URL de login
     const authCodeUrlParameters = {
       scopes: ["User.Read", "Contacts.ReadWrite"], 
       redirectUri: "http://localhost:3000"
     };
 
     const authUrl = await pca.getAuthCodeUrl(authCodeUrlParameters);
-    console.log("👉 Abre este enlace en el navegador y copia el código de autorización:");
+    console.log(" Abre este enlace en el navegador y copia el código de autorización:");
     console.log(authUrl);
 
-    // ⚠️ Pausa manual: pega aquí el "authorization code" que obtienes del navegador
+    // Pausa manual: pega aquí el "authorization code" que obtienes del navegador
     const readline = await import("readline");
     const rl = readline.createInterface({ input: process.stdin, output: process.stdout });
 
     rl.question("Pega aquí el código de autorización: ", async (authCode) => {
-      // 2️⃣ Intercambiar el código por un token
+      // Intercambiar el código por un token
       const tokenResponse = await pca.acquireTokenByCode({
         code: authCode,
         scopes: ["User.Read", "Contacts.ReadWrite"],
@@ -37,9 +37,9 @@ async function main() {
       });
 
       const accessToken = tokenResponse.accessToken;
-      console.log("✅ Token obtenido!");
+      console.log("Token obtenido!");
 
-      // 3️⃣ Crear un contacto en Outlook con categoría
+      //Crear un contacto en Outlook con categoría
       const newContact = {
         givenName: "Cristian",
         surname: "Estrada",
@@ -50,7 +50,7 @@ async function main() {
           }
         ],
         businessPhones: ["+57 3000000000"],
-        categories: ["Amigos"] // 👈 Categoría que le asignamos
+        categories: ["Amigos"] //Categoría que le asignamos
       };
 
       const response = await fetch("https://graph.microsoft.com/v1.0/me/contacts", {
@@ -63,16 +63,16 @@ async function main() {
       });
 
       if (!response.ok) {
-        console.error("❌ Error al crear contacto:", await response.text());
+        console.error(" Error al crear contacto:", await response.text());
       } else {
-        console.log("🎉 Contacto creado con categoría!");
+        console.log("Contacto creado con categoría!");
       }
 
       rl.close();
     });
 
   } catch (err) {
-    console.error("❌ Error general:", err);
+    console.error("Error general:", err);
   }
 }
 
